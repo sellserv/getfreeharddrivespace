@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Unlimited Free Hard Drive Space!</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #303030; /* Changed background color to black */
+            overflow: hidden;
+        }
+        #myCanvas {
+            background-color: #151515; /* Made canvas slightly darker */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="1000" height="700"></canvas>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawRoundedRectangle(x, y, width, height, radius, color) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawText(text, x, y, font, color, align = 'center') {
+            ctx.font = font;
+            ctx.fillStyle = color;
+            ctx.textAlign = align;
+            ctx.fillText(text, x, y);
+        }
+
+        let button = {
+            x: canvas.width / 2 - 200,
+            y: canvas.height / 2 - 30,
+            width: 400,
+            height: 60,
+            text: "Generate Free Space Now!",
+            color: '#5cb85c',
+            hoverColor: '#4cae4c',
+            isHovered: false,
+            display: true,
+            draw: function () {
+                if (this.display) {
+                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, this.isHovered ? this.hoverColor : this.color);
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, 'white', 'white'); // Changed text color to white
+                }
+            },
+            checkHover: function (mouseX, mouseY) {
+                this.isHovered = this.display && mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height;
+            },
+            click: function () {
+                if (this.isHovered) {
+                    startGeneration();
+                }
+            }
+        };
+
+        let loadingMessage = {
+            text: "Processing... Please wait.",
+            display: false,
+            draw: function () {
+                if (this.display) {
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '16px sans-serif', '#eee'); // Changed text color to light gray
+                }
+            }
+        };
+
+        let progressBar = {
+            x: canvas.width / 2 - 150,
+            y: canvas.height / 2 + 60,
+            width: 300,
+            height: 20,
+            progress: 0,
+            display: false,
+            draw: function () {
+                if (this.display) {
+                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, '#333'); //Progress bar background
+                    drawRoundedRectangle(this.x, this.y, this.progress, this.height, 5, '#5cb85c');
+                }
+            }
+        };
+
+        let resultMessage = {
+            text: "",
+            display: false,
+            draw: function () {
+                if (this.display) {
+                    const resultWidth = canvas.width - 40;
+                    const resultHeight = 80;
+                    const resultX = 20;
+                    const resultY = canvas.height / 2 - resultHeight / 2;
+
+                    drawRoundedRectangle(resultX, resultY, resultWidth, resultHeight, 5, '#222'); // Darker background for result
+                    ctx.strokeStyle = '#ddd';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(resultX, resultY, resultWidth, resultHeight);
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, 'white', 'white'); // Changed text color to white
+                }
+            }
+        };
+
+        let hackingSequence = {
+            step: 0,
+            display: false,
+            lines: [],
+            draw: function () {
+                if (this.display) {
+                    ctx.fillStyle = '#57fa57';
+                    ctx.font = '14px monospace';
+                    const startX = 120;
+                    const lineSpacing = 20;
+                    const maxLines = 10;
+                    const startY = canvas.height / 2 - (maxLines / 2) * lineSpacing;
+                    const availableWidth = canvas.width - 2 * startX; // Calculate available width
+                    let longestLine = 0;
+                    for(let i=0; i<this.lines.length; i++){
+                        const currentLineLength = ctx.measureText(this.lines[i]).width;
+                        if(currentLineLength > longestLine){
+                            longestLine = currentLineLength;
+                        }
+                    }
+
+                    // Adjust font size if the text is too wide
+                    let fontSize = 14;
+                    if (longestLine > availableWidth) {
+                        fontSize = 14 * (availableWidth / longestLine); // Reduce font size proportionally
+                        ctx.font = `${fontSize}px monospace`;
+                    }
+
+                    for (let i = 0; i < this.lines.length; i++) {
+                        ctx.fillText(this.lines[i], startX, startY + i * lineSpacing);
+                    }
+                }
+            },
+            addLine: function (line) {
+                this.lines.push(line);
+                if (this.lines.length > 10) {
+                    this.lines.shift();
+                }
+            },
+            start: function () {
+                this.display = true;
+                this.step = 0;
+                this.lines = [];
+                this.interval = setInterval(() => {
+                    this.step++;
+                    switch (this.step) {
+                        case 1:
+                            this.addLine("Connecting to server...");
+                            break;
+                        case 3:
+                            this.addLine("Server found: 192.168.1.100");
+                            break;
+                        case 5:
+                            this.addLine("Authenticating...");
+                            break;
+                        case 7:
+                            this.addLine("Authentication successful.");
+                            break;
+                        case 9:
+                            this.addLine("Accessing hard drive...");
+                            break;
+                        case 11:
+                            this.addLine("Allocating space...");
+                            break;
+                        case 13:
+                            this.addLine("Space allocated: 999 TB");
+                            break;
+                        case 15:
+                            this.addLine("Finalizing...");
+                            break;
+                        case 17:
+                            this.addLine("Done!");
+                            clearInterval(this.interval);
+                            setTimeout(() => {
+                                this.display = false;
+                                resultMessage.text = "Get rekt nerd";
+                                resultMessage.display = true;
+                                drawScene();
+                            }, 1500); // Changes speed between hacking and final message
+                            break;
+                        default:
+                            this.addLine("...");
+                    }
+                    drawScene();
+                }, 1000); // Changes the speed of each hacking line
+            },
+            stop: function () {
+                clearInterval(this.interval);
+                this.display = false;
+                this.lines = [];
+            }
+        };
+
+        let sikeMessage = {
+            text: "Sike",
+            display: false,
+            draw: function (){
+                if (this.display){
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FFD700');
+                }
+            }
+        };
+
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoundedRectangle(50, 20, canvas.width - 100, 80, 8, '#222'); // Darker background for main container
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.4)'; // Added a shadow for better visibility
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetX = 5;
+            ctx.shadowOffsetY = 5;
+            drawText("Unlock Unlimited Free Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff'); // White text
+            ctx.shadowBlur = 0;
+            button.draw();
+            loadingMessage.draw();
+            progressBar.draw();
+            resultMessage.draw();
+            hackingSequence.draw();
+            sikeMessage.draw();
+        }
+
+        let generationInterval;
+        function startGeneration() {
+            button.display = false;
+            loadingMessage.display = true;
+            progressBar.display = true;
+            progressBar.progress = 0;
+
+            let width = 0;
+            generationInterval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(generationInterval);
+                    loadingMessage.display = false;
+                    progressBar.display = false;
+                    resultMessage.text = "Congratulations! You now have virtually unlimited hard drive space. Enjoy!";
+                    resultMessage.display = true;
+                    setTimeout(() => {
+                        resultMessage.display = false;
+                        sikeMessage.display = true;
+                        drawScene()
+                        setTimeout(() => {
+                            sikeMessage.display = false
+                            hackingSequence.start();
+                        }, 1500)
+                    }, 2000);
+
+                } else {
+                    width++;
+                    progressBar.progress = width;
+                }
+                drawScene();
+            }, 25); // Changes loading bar speed
+        }
+
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            button.checkHover(mouseX, mouseY);
+            drawScene();
+        });
+
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            button.click(mouseX, mouseY);
+        });
+
+        drawScene();
+    </script>
+</body>
+</html>
