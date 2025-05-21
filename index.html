@@ -20,10 +20,21 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        #image {
+            position: absolute;
+            display: none;
+            max-width: 50%;
+            max-height: 50%;
+            z-index: 10;
+            border-radius: 8px;
+
+        }
     </style>
 </head>
 <body>
     <canvas id="myCanvas" width="1000" height="700"></canvas>
+    <img id="image" src="nani.jpg">
     <script>
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
@@ -125,6 +136,7 @@
             step: 0,
             display: false,
             lines: [],
+            imageElement: document.getElementByID('image'),
             draw: function () {
                 if (this.display) {
                     ctx.fillStyle = '#57fa57';
@@ -190,14 +202,17 @@
                             break;
                         case 15:
                             this.addLine("Anddddddd...");
-                            //break;
-                        //case 17:
-                            //this.addLine("Cooked");
+                            break;
+                        case 17:
+                            this.addLine("Cooked");
                             clearInterval(this.interval);
                             setTimeout(() => {
                                 this.display = false;
-                                resultMessage.text = "Cooked";
-                                resultMessage.display = true;
+                                if (this.imageElement){
+                                    this.imageElement.style.displayt = 'block';
+                                    this.imageElement.style.left = (canvas.width /2)
+                                    this.imageElement.style.top = (canvas.height /2)
+                                }
                                 drawScene();
                             }, 1500); // Changes speed between hacking and final message
                             break;
@@ -219,7 +234,7 @@
             display: false,
             draw: function (){
                 if (this.display){
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FF0000');
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FFFFFF');
                 }
             }
         };
