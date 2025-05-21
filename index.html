@@ -136,7 +136,7 @@
             step: 0,
             display: false,
             lines: [],
-            imageElement: document.getElementByID('image'),
+            imageElement: document.getElementById('image'),
             draw: function () {
                 if (this.display) {
                     ctx.fillStyle = '#57fa57';
@@ -209,7 +209,7 @@
                             setTimeout(() => {
                                 this.display = false;
                                 if (this.imageElement){
-                                    this.imageElement.style.displayt = 'block';
+                                    this.imageElement.style.display = 'block';
                                     this.imageElement.style.left = (canvas.width /2)
                                     this.imageElement.style.top = (canvas.height /2)
                                 }
