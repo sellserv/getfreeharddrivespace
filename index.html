@@ -215,11 +215,11 @@
         };
 
         let sikeMessage = {
-            text: "Sike xd",
+            text: "Sike",
             display: false,
             draw: function (){
                 if (this.display){
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FFD700');
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FF0000');
                 }
             }
         };
@@ -263,15 +263,15 @@
                         setTimeout(() => {
                             sikeMessage.display = false
                             hackingSequence.start();
-                        }, 2000)
-                    }, 2000);
+                        }, 2250)
+                    }, 2250);
 
                 } else {
                     width++;
                     progressBar.progress = width;
                 }
                 drawScene();
-            }, 25); // Changes loading bar speed
+            }, 30); // Changes loading bar speed
         }
 
         canvas.addEventListener('mousemove', (event) => {
