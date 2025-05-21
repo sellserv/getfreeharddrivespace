@@ -191,12 +191,12 @@
                         case 15:
                             this.addLine("Anddddddd...");
                             break;
-                        case 17:
-                            this.addLine("Cooked");
+                        //case 17:
+                            //this.addLine("Cooked");
                             clearInterval(this.interval);
                             setTimeout(() => {
                                 this.display = false;
-                                resultMessage.text = "Get rekt nerd";
+                                resultMessage.text = "Cooked";
                                 resultMessage.display = true;
                                 drawScene();
                             }, 1500); // Changes speed between hacking and final message
@@ -231,7 +231,7 @@
             ctx.shadowBlur = 15;
             ctx.shadowOffsetX = 5;
             ctx.shadowOffsetY = 5;
-            drawText("Unlock Unlimited Free Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff'); // White text
+            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff'); // White text
             ctx.shadowBlur = 0;
             button.draw();
             loadingMessage.draw();
@@ -254,7 +254,7 @@
                     clearInterval(generationInterval);
                     loadingMessage.display = false;
                     progressBar.display = false;
-                    resultMessage.text = "Congratulations! You now have virtually unlimited hard drive space. Enjoy!";
+                    resultMessage.text = "Congratulations! You now have virtually unlimited hard drive space!";
                     resultMessage.display = true;
                     setTimeout(() => {
                         resultMessage.display = false;
