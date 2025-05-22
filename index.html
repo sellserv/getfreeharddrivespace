@@ -35,9 +35,15 @@
 <body>
     <canvas id="myCanvas" width="1000" height="700"></canvas>
     <img id="image" src="nani.jpg">
+    <audio id="sikeSound" src="sike_sound.mp3" preload="auto"> </audio>
+    <audio id="naniSound" src="nani_sound.mp3" preload="auto"> </audio>
+
     <script>
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
+        const imageElement = document.getElementById('image');
+        const sikeSound = document.getElementById('sikeSound');
+        const naniSound = document.getElementById('naniSound');
 
         function drawRoundedRectangle(x, y, width, height, radius, color) {
             ctx.beginPath();
@@ -206,6 +212,11 @@
                         case 17:
                             this.addLine("     Cooked    ");
                             clearInterval(this.interval);
+
+                            if (naniSound) {
+                                naniSound.play()
+                            }
+
                             setTimeout(() => {
                                 this.display = false;
                                 if (this.imageElement){
@@ -226,6 +237,20 @@
                 clearInterval(this.interval);
                 this.display = false;
                 this.lines = [];
+
+                if (imageElement){
+                    this.display = false;
+                    this.lines = [];
+                    if (imageElement) {
+                        imageElement.style.display = 'none';
+                    }
+
+                    if (sikeSound) sikeSound.pause();
+                    if (naniSound) naniSound.pause();
+                    sikeSound.currentTime = 0;
+                    naniSound.currentTime = 0;
+
+                }
             }
         };
 
