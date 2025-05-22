@@ -210,12 +210,6 @@
                             this.addLine("     Cooked     "); // Extra spaces for effect
                             clearInterval(this.interval);
 
-                            // Play naniSound directly here, in sync with image appearance
-                            if (naniAudio) {
-                                naniAudio.currentTime = 0; // Rewind to start
-                                naniAudio.play().catch(e => console.error("Error playing nani sound:", e));
-                            }
-
                             setTimeout(() => {
                                 this.display = false;
                                 resultMessage.display = false;
@@ -225,6 +219,12 @@
                                     imageElement.style.display = 'block'; // Make the image visible
                                     // CSS transform handles centering, no need to set left/top here
                                 }
+                                    // Play naniSound directly here, in sync with image appearance
+                                if (naniAudio) {
+                                    naniAudio.currentTime = 0; // Rewind to start
+                                    naniAudio.play().catch(e => console.error("Error playing nani sound:", e));
+                                }
+
                                 drawScene(); // Redraw to clear hacking lines and show image
                             }, 1500); // This delay is for the image and sound to appear after "Cooked" line
                             break;
