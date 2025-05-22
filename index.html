@@ -84,7 +84,7 @@
             draw: function () {
                 if (this.display) {
                     drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, this.isHovered ? this.hoverColor : this.color);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, '20px sans-serif', 'white'); // Changed font size for button text
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, '24px sans-serif', 'white'); // Changed font size for button text
                 }
             },
             checkHover: function (mouseX, mouseY) {
@@ -102,7 +102,7 @@
             display: false,
             draw: function () {
                 if (this.display) {
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '16px sans-serif', '#eee');
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '20px sans-serif', '#eee');
                 }
             }
         };
@@ -136,7 +136,7 @@
                     ctx.strokeStyle = '#ddd';
                     ctx.lineWidth = 1;
                     ctx.strokeRect(resultX, resultY, resultWidth, resultHeight);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '20px sans-serif', 'white');
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '24px sans-serif', 'white');
                 }
             }
         };
@@ -152,7 +152,7 @@
                     const startX = 260;
                     const lineSpacing = 30; // Increased for more vertical space
                     const maxLines = 10;
-                    const startY = canvas.height / 2 - (maxLines / 2) * lineSpacing;
+                    const startY = canvas.height / 3 - (maxLines / 2) * lineSpacing;
                     // Note: availableWidth and longestLine logic is for dynamic font sizing
                     // which is currently commented out, but kept for context.
                     // const availableWidth = canvas.width - 2 * startX;
@@ -259,7 +259,7 @@
             display: false,
             draw: function (){
                 if (this.display){
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '30px sans-serif', '#FFFFFF');
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '100px sans-serif', '#FFFFFF');
                 }
             }
         };
@@ -270,7 +270,7 @@
             ctx.shadowBlur = 15;
             ctx.shadowOffsetX = 5;
             ctx.shadowOffsetY = 5;
-            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff');
+            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '26px sans-serif', '#fff');
             ctx.shadowBlur = 0;
             button.draw();
             loadingMessage.draw();
@@ -315,7 +315,7 @@
                     progressBar.progress = width;
                 }
                 drawScene();
-            }, 30); // Speed of loading bar animation
+            }, 40); // Speed of loading bar animation
         }
 
         canvas.addEventListener('mousemove', (event) => {
