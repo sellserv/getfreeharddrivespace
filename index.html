@@ -28,22 +28,25 @@
             max-height: 50%;
             z-index: 10;
             border-radius: 8px;
-
+            /* Added for proper centering */
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
         }
     </style>
 </head>
 <body>
     <canvas id="myCanvas" width="1000" height="700"></canvas>
-    <img id="image" src="nani.jpg">
-    <audio id="sikeSound" src="sike_sound.mp3" preload="auto"> </audio>
-    <audio id="naniSound" src="nani_sound.mp3" preload="auto"> </audio>
+    <img id="image" src="nani.jpg" alt="Surprise image">
+    <audio id="sikeSound" src="sike_sound.mp3" preload="auto"></audio>
+    <audio id="naniSound" src="nani_sound.mp3" preload="auto"></audio>
 
     <script>
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
         const imageElement = document.getElementById('image');
-        const sikeSound = document.getElementById('sikeSound');
-        const naniSound = document.getElementById('naniSound');
+        const sikeAudio = document.getElementById('sikeSound'); // Renamed for clarity
+        const naniAudio = document.getElementById('naniSound'); // Renamed for clarity
 
         function drawRoundedRectangle(x, y, width, height, radius, color) {
             ctx.beginPath();
@@ -81,7 +84,7 @@
             draw: function () {
                 if (this.display) {
                     drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, this.isHovered ? this.hoverColor : this.color);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, 'white', 'white'); // Changed text color to white
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, '20px sans-serif', 'white'); // Changed font size for button text
                 }
             },
             checkHover: function (mouseX, mouseY) {
@@ -99,7 +102,7 @@
             display: false,
             draw: function () {
                 if (this.display) {
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '16px sans-serif', '#eee'); // Changed text color to light gray
+                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '16px sans-serif', '#eee');
                 }
             }
         };
@@ -113,7 +116,7 @@
             display: false,
             draw: function () {
                 if (this.display) {
-                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, '#333'); //Progress bar background
+                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, '#333');
                     drawRoundedRectangle(this.x, this.y, this.progress, this.height, 5, '#5cb85c');
                 }
             }
@@ -129,11 +132,11 @@
                     const resultX = 20;
                     const resultY = canvas.height / 2 - resultHeight / 2;
 
-                    drawRoundedRectangle(resultX, resultY, resultWidth, resultHeight, 5, '#222'); // Darker background for result
+                    drawRoundedRectangle(resultX, resultY, resultWidth, resultHeight, 5, '#222');
                     ctx.strokeStyle = '#ddd';
                     ctx.lineWidth = 1;
                     ctx.strokeRect(resultX, resultY, resultWidth, resultHeight);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, 'white', 'white'); // Changed text color to white
+                    drawText(this.text, canvas.width / 2, canvas.height / 2, '20px sans-serif', 'white');
                 }
             }
         };
@@ -142,29 +145,23 @@
             step: 0,
             display: false,
             lines: [],
-            imageElement: document.getElementById('image'),
             draw: function () {
                 if (this.display) {
                     ctx.fillStyle = '#57fa57';
                     ctx.font = '22px monospace';
                     const startX = 300;
-                    const lineSpacing = 30;
+                    const lineSpacing = 30; // Increased for more vertical space
                     const maxLines = 10;
                     const startY = canvas.height / 2 - (maxLines / 2) * lineSpacing;
-                    const availableWidth = canvas.width - 2 * startX; // Calculate available width
-                    let longestLine = 0;
-                    for(let i=0; i<this.lines.length; i++){
-                        const currentLineLength = ctx.measureText(this.lines[i]).width;
-                        if(currentLineLength > longestLine){
-                            longestLine = currentLineLength;
-                        }
-                    }
-
-                    // Adjust font size if the text is too wide
-                    // let fontSize = 20;
-                    // if (longestLine > availableWidth) {
-                    //     fontSize = 20 * (availableWidth / longestLine); // Reduce font size proportionally
-                    //     ctx.font = `${fontSize}px monospace`;
+                    // Note: availableWidth and longestLine logic is for dynamic font sizing
+                    // which is currently commented out, but kept for context.
+                    // const availableWidth = canvas.width - 2 * startX;
+                    // let longestLine = 0;
+                    // for(let i=0; i<this.lines.length; i++){
+                    //     const currentLineLength = ctx.measureText(this.lines[i]).width;
+                    //     if(currentLineLength > longestLine){
+                    //         longestLine = currentLineLength;
+                    //     }
                     // }
 
                     for (let i = 0; i < this.lines.length; i++) {
@@ -210,46 +207,49 @@
                             this.addLine("   Anddddddd...    ");
                             break;
                         case 17:
-                            this.addLine("     Cooked    ");
+                            this.addLine("     Cooked     "); // Extra spaces for effect
                             clearInterval(this.interval);
 
-                            if (naniSound) {
-                                naniSound.play()
+                            // Play naniSound directly here, in sync with image appearance
+                            if (naniAudio) {
+                                naniAudio.currentTime = 0; // Rewind to start
+                                naniAudio.play().catch(e => console.error("Error playing nani sound:", e));
                             }
 
                             setTimeout(() => {
                                 this.display = false;
-                                if (this.imageElement){
-                                    this.imageElement.style.display = 'block';
-                                    this.imageElement.style.left = (canvas.width /2)
-                                    this.imageElement.style.top = (canvas.height /2)
+                                resultMessage.display = false;
+                                sikeMessage.display = false; // Ensure sike message is gone
+
+                                if (imageElement){
+                                    imageElement.style.display = 'block'; // Make the image visible
+                                    // CSS transform handles centering, no need to set left/top here
                                 }
-                                drawScene();
-                            }, 1500); // Changes speed between hacking and final message
+                                drawScene(); // Redraw to clear hacking lines and show image
+                            }, 1500); // This delay is for the image and sound to appear after "Cooked" line
                             break;
                         default:
                             this.addLine("...");
                     }
                     drawScene();
-                }, 1100); // Changes the speed of each hacking line
+                }, 1100); // Speed of each hacking line
             },
             stop: function () {
                 clearInterval(this.interval);
                 this.display = false;
                 this.lines = [];
 
-                if (imageElement){
-                    this.display = false;
-                    this.lines = [];
-                    if (imageElement) {
-                        imageElement.style.display = 'none';
-                    }
-
-                    if (sikeSound) sikeSound.pause();
-                    if (naniSound) naniSound.pause();
-                    sikeSound.currentTime = 0;
-                    naniSound.currentTime = 0;
-
+                if (imageElement) {
+                    imageElement.style.display = 'none'; // Hide image if stop is called
+                }
+                // Stop and rewind all sounds
+                if (sikeAudio) {
+                    sikeAudio.pause();
+                    sikeAudio.currentTime = 0;
+                }
+                if (naniAudio) {
+                    naniAudio.pause();
+                    naniAudio.currentTime = 0;
                 }
             }
         };
@@ -266,12 +266,11 @@
 
         function drawScene() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawRoundedRectangle(50, 20, canvas.width - 100, 80, 8, '#222'); // Darker background for main container
-            // ctx.shadowColor = 'rgba(0, 0, 0, 0.4)'; // Added a shadow for better visibility
+            drawRoundedRectangle(50, 20, canvas.width - 100, 80, 8, '#222');
             ctx.shadowBlur = 15;
             ctx.shadowOffsetX = 5;
             ctx.shadowOffsetY = 5;
-            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff'); // White text
+            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '24px sans-serif', '#fff');
             ctx.shadowBlur = 0;
             button.draw();
             loadingMessage.draw();
@@ -290,7 +289,7 @@
 
             let width = 0;
             generationInterval = setInterval(() => {
-                if (width >= 100) {
+                if (width >= progressBar.width) { // Check against actual progressBar.width
                     clearInterval(generationInterval);
                     loadingMessage.display = false;
                     progressBar.display = false;
@@ -299,19 +298,24 @@
                     setTimeout(() => {
                         resultMessage.display = false;
                         sikeMessage.display = true;
+                        // Play sike sound here, after "Congratulations" disappears
+                        if (sikeAudio) {
+                            sikeAudio.currentTime = 0; // Rewind for next play
+                            sikeAudio.play().catch(e => console.error("Error playing sike sound:", e));
+                        }
                         drawScene()
                         setTimeout(() => {
                             sikeMessage.display = false
                             hackingSequence.start();
-                        }, 1000)
-                    }, 3000);
+                        }, 1000) // Delay for "Sike" message duration
+                    }, 3000); // Delay for "Congratulations" message duration
 
                 } else {
-                    width++;
+                    width += 3; // Increase by a bit more to make it faster
                     progressBar.progress = width;
                 }
                 drawScene();
-            }, 30); // Changes loading bar speed
+            }, 30); // Speed of loading bar animation
         }
 
         canvas.addEventListener('mousemove', (event) => {
@@ -329,7 +333,23 @@
             button.click(mouseX, mouseY);
         });
 
-        drawScene();
+        // Ensure elements are hidden on load and draw initial scene
+        document.addEventListener('DOMContentLoaded', () => {
+            if (imageElement) {
+                imageElement.style.display = 'none';
+            }
+            // Hide and rewind sounds initially to ensure they are ready
+            if (sikeAudio) {
+                sikeAudio.pause();
+                sikeAudio.currentTime = 0;
+            }
+            if (naniAudio) {
+                naniAudio.pause();
+                naniAudio.currentTime = 0;
+            }
+
+            drawScene(); // Initial draw of the scene (showing the button)
+        });
     </script>
 </body>
 </html>
