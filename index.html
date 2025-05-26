@@ -3,353 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Unlimited Free Hard Drive Space!</title>
+    <title>Free Hard Drive Space Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #303030; /* Changed background color to black */
-            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Tailwind gray-900 */
+            color: #9CA3AF; /* Tailwind gray-400 */
+            overflow-x: hidden; /* Prevent horizontal scroll if window is dragged off-screen */
         }
-        #myCanvas {
-            background-color: #151515; /* Made canvas slightly darker */
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .terminal-output::-webkit-scrollbar,
+        #commandPromptContent::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-output::-webkit-scrollbar-track,
+        #commandPromptContent::-webkit-scrollbar-track {
+            background: #1F2937; /* Tailwind gray-800 */
+        }
+        .terminal-output::-webkit-scrollbar-thumb,
+        #commandPromptContent::-webkit-scrollbar-thumb {
+            background: #4B5563; /* Tailwind gray-600 */
+            border-radius: 4px;
+        }
+        .terminal-output::-webkit-scrollbar-thumb:hover,
+        #commandPromptContent::-webkit-scrollbar-thumb:hover {
+            background: #6B7280; /* Tailwind gray-500 */
+        }
+        .glowing-text {
+            text-shadow: 0 0 5px #22D3EE, 0 0 10px #22D3EE, 0 0 15px #22D3EE; /* Tailwind cyan-400 */
+        }
+        .button-active-glow:active {
+            box-shadow: 0 0 15px #34D399; /* Tailwind emerald-400 */
+        }
+        .font-roboto-mono {
+            font-family: 'Roboto Mono', monospace;
         }
 
-        #image {
-            position: absolute;
-            display: none;
-            max-width: 50%;
-            max-height: 50%;
-            z-index: 10;
-            border-radius: 8px;
-            /* Added for proper centering */
-            transform: translate(-50%, -50%);
+        /* Styles for the floating command prompt window */
+        #floatingCommandPrompt {
+            position: fixed;
             left: 50%;
             top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            height: 400px;
+            background-color: #0C0C0C;
+            border: 1px solid #4A5568;
+            border-top: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /* display: flex;  <-- REMOVED */
+            /* flex-direction: column; <-- REMOVED */
+            border-radius: 0 0 6px 6px;
         }
+
+        #commandPromptTitleBar {
+            background-color: #2D3748;
+            color: #E2E8F0;
+            padding: 6px 10px;
+            cursor: move;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4A5568;
+            border-radius: 6px 6px 0 0;
+        }
+        #commandPromptTitleBar span {
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #commandPromptContent {
+            flex-grow: 1; /* This works when parent is display:flex */
+            padding: 8px;
+            overflow-y: auto;
+            color: #E5E7EB;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        #commandPromptContent p {
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 2px;
+        }
+        .window-controls {
+            display: flex;
+            gap: 4px;
+        }
+        .window-controls div {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #718096;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            line-height: 1;
+        }
+        .window-controls .minimize { background-color: #A0AEC0; }
+        .window-controls .maximize { background-color: #A0AEC0; }
+        .window-controls .close { background-color: #E53E3E; color: white; }
     </style>
 </head>
-<body>
-    <canvas id="myCanvas" width="1600" height="1050"></canvas>
-    <img id="image" src="nani.jpg" alt="Surprise image">
-    <audio id="sikeSound" src="sike_sound.mp3" preload="auto"></audio>
-    <audio id="naniSound" src="nani_sound.mp3" preload="auto"></audio>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+        <header class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-emerald-400 glowing-text">HDD Space Synthesizer v3000</h1>
+            <p class="text-sm text-gray-500 mt-1">Generate Terabytes of Free Space Instantly!*</p>
+        </header>
+
+        <div class="mb-6">
+            <label for="spaceAmount" class="block text-sm font-medium text-gray-300 mb-1">Desired Space (GB):</label>
+            <input type="number" id="spaceAmount" name="spaceAmount" min="1" max="10000" placeholder="e.g., 500"
+                   class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all duration-200"
+                   value="100">
+        </div>
+
+        <button id="generateButton"
+                class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 button-active-glow focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75">
+            Synthesize Space!
+        </button>
+
+        <div id="progressBarContainer" class="mt-6 hidden">
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div id="progressBar" class="bg-sky-500 h-2.5 rounded-full transition-all duration-500 ease-linear" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="messageArea" class="mt-4 p-4 bg-gray-900 rounded-lg h-48 overflow-y-auto border border-gray-700 terminal-output text-xs sm:text-sm hidden">
+            </div>
+    </div>
+
+    <div id="floatingCommandPrompt" class="hidden"> <div id="commandPromptTitleBar">
+            <span>C:\WINDOWS\system32\cmd.exe - HDD_EXPLOIT.EXE</span>
+            <div class="window-controls">
+                <div class="minimize" title="Minimize">_</div>
+                <div class="maximize" title="Maximize">□</div>
+                <div class="close" title="Close">X</div>
+            </div>
+        </div>
+        <div id="commandPromptContent" class="font-roboto-mono">
+            </div>
+    </div>
+
+    <footer class="mt-8 text-center">
+        <p class="text-xs text-gray-600">*This is a prank website and does not actually generate hard drive space or modify your system in any way. For entertainment purposes only.</p>
+    </footer>
 
     <script>
-        const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d');
-        const imageElement = document.getElementById('image');
-        const sikeAudio = document.getElementById('sikeSound'); // Renamed for clarity
-        const naniAudio = document.getElementById('naniSound'); // Renamed for clarity
+        // Get DOM elements
+        const spaceAmountInput = document.getElementById('spaceAmount');
+        const generateButton = document.getElementById('generateButton');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBar = document.getElementById('progressBar');
+        const messageArea = document.getElementById('messageArea');
+        
+        const floatingCommandPrompt = document.getElementById('floatingCommandPrompt');
+        const commandPromptTitleBar = document.getElementById('commandPromptTitleBar');
+        const commandPromptContent = document.getElementById('commandPromptContent');
 
-        function drawRoundedRectangle(x, y, width, height, radius, color) {
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
+        let messageInterval;
+
+        const fakeInitialMessages = [
+            "Initializing quantum entanglement drive...", "Connecting to subspace storage matrix...", "Bypassing firewall with heuristic algorithms...", "Calibrating flux capacitor...", "Defragmenting non-existent sectors...", "Reversing polarity of neutron flow...", "Injecting free gigabytes via tachyon beam...", "Optimizing data streams with AI-powered hamsters...", "Buffering a lot of important-looking data...", "Finalizing initial phase..."
+        ];
+        const fakeHackingLines = [
+            "SYSTEM Microsoft Windows [Version 10.0.19042.985]", "SYSTEM (c) Microsoft Corporation. All rights reserved.", "EMPTY", "PROMPT C:\\Users\\GamerPC> Attempting advanced system integration...", "SYSTEM Accessing kernel-level functions...", "SYSTEM Bypassing User Account Control... [SUCCESS]", "PROMPT C:\\Windows\\system32> execute space_compiler.exe -force -gb " + (Math.floor(Math.random()*500)+500), "SYSTEM Compiling virtual disk sectors...", "SYSTEM [▓▓▓░░░░░░░░░░░░░░░░░░░░░░░] 15% - Allocating memory blocks...", "SYSTEM [▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░] 30% - Writing pseudo-random data patterns...", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░] 55% - Encrypting virtual partition table...", "WARNING High-frequency tachyon emission detected!", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░] 75% - Verifying data integrity (simulated)...", "ERROR Anomaly detected in sector 0xDEADBEEF! Attempting to recover...", "SYSTEM Recovery failed. Skipping corrupted sector.", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% - Virtual disk compilation complete.", "SUCCESS New drive mounted as (F:) - Free Space Synthesized!", "PROMPT C:\\Windows\\system32> exit", "SYSTEM Logging off...", "EMPTY"
+        ];
+
+        function addInitialMessage(text, type = 'info') {
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+            if (type === 'error') p.className = 'text-red-400';
+            else if (type === 'success') p.className = 'text-green-400';
+            else p.className = 'text-sky-300';
+            messageArea.appendChild(p);
+            messageArea.scrollTop = messageArea.scrollHeight;
         }
 
-        function drawText(text, x, y, font, color, align = 'center') {
-            ctx.font = font;
-            ctx.fillStyle = color;
-            ctx.textAlign = align;
-            ctx.fillText(text, x, y);
-        }
-
-        let button = {
-            x: canvas.width / 2 - 200,
-            y: canvas.height / 2 - 30,
-            width: 400,
-            height: 60,
-            text: "Generate Free Space Now!",
-            color: '#5cb85c',
-            hoverColor: '#4cae4c',
-            isHovered: false,
-            display: true,
-            draw: function () {
-                if (this.display) {
-                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, this.isHovered ? this.hoverColor : this.color);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 5, '24px sans-serif', 'white'); // Changed font size for button text
-                }
-            },
-            checkHover: function (mouseX, mouseY) {
-                this.isHovered = this.display && mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height;
-            },
-            click: function () {
-                if (this.isHovered) {
-                    startGeneration();
-                }
-            }
-        };
-
-        let loadingMessage = {
-            text: "Processing... Please wait.",
-            display: false,
-            draw: function () {
-                if (this.display) {
-                    drawText(this.text, canvas.width / 2, canvas.height / 2 + 40, '20px sans-serif', '#eee');
-                }
-            }
-        };
-
-        let progressBar = {
-            x: canvas.width / 2 - 150,
-            y: canvas.height / 2 + 60,
-            width: 300,
-            height: 20,
-            progress: 0,
-            display: false,
-            draw: function () {
-                if (this.display) {
-                    drawRoundedRectangle(this.x, this.y, this.width, this.height, 5, '#333');
-                    drawRoundedRectangle(this.x, this.y, this.progress, this.height, 5, '#5cb85c');
-                }
-            }
-        };
-
-        let resultMessage = {
-            text: "",
-            display: false,
-            draw: function () {
-                if (this.display) {
-                    const resultWidth = canvas.width - 40;
-                    const resultHeight = 80;
-                    const resultX = 20;
-                    const resultY = canvas.height / 2 - resultHeight / 2;
-
-                    drawRoundedRectangle(resultX, resultY, resultWidth, resultHeight, 5, '#222');
-                    ctx.strokeStyle = '#ddd';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(resultX, resultY, resultWidth, resultHeight);
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '24px sans-serif', 'white');
-                }
-            }
-        };
-
-        let hackingSequence = {
-            step: 0,
-            display: false,
-            lines: [],
-            draw: function () {
-                if (this.display) {
-                    ctx.fillStyle = '#57fa57';
-                    ctx.font = '19px monospace';
-                    const startX = 260;
-                    const lineSpacing = 30; // Increased for more vertical space
-                    const maxLines = 10;
-                    const startY = canvas.height / 3 - (maxLines / 2) * lineSpacing;
-                    // Note: availableWidth and longestLine logic is for dynamic font sizing
-                    // which is currently commented out, but kept for context.
-                    // const availableWidth = canvas.width - 2 * startX;
-                    // let longestLine = 0;
-                    // for(let i=0; i<this.lines.length; i++){
-                    //     const currentLineLength = ctx.measureText(this.lines[i]).width;
-                    //     if(currentLineLength > longestLine){
-                    //         longestLine = currentLineLength;
-                    //     }
-                    // }
-
-                    for (let i = 0; i < this.lines.length; i++) {
-                        ctx.fillText(this.lines[i], startX, startY + i * lineSpacing);
-                    }
-                }
-            },
-            addLine: function (line) {
-                this.lines.push(line);
-                if (this.lines.length > 10) {
-                    this.lines.shift();
-                }
-            },
-            start: function () {
-                this.display = true;
-                this.step = 0;
-                this.lines = [];
-                this.interval = setInterval(() => {
-                    this.step++;
-                    switch (this.step) {
-                        case 1:
-                            this.addLine("   Initiating connection...   ");
-                            break;
-                        case 3:
-                            this.addLine("   Connection found: 192.168.1.100   ");
-                            break;
-                        case 5:
-                            this.addLine("   Installing malware...   ");
-                            break;
-                        case 7:
-                            this.addLine("   Escalating privileges...   ");
-                            break;
-                        case 9:
-                            this.addLine("   Disabling antivirus...   ");
-                            break;
-                        case 11:
-                            this.addLine("   Accessing the main fwame...   ");
-                            break;
-                        case 13:
-                            this.addLine("   Sending your suspicious files to the FBI...   ");
-                            break;
-                        case 15:
-                            this.addLine("   Anddddddd...    ");
-                            break;
-                        case 17:
-                            this.addLine("     Cooked     "); // Extra spaces for effect
-                            clearInterval(this.interval);
-
-                            setTimeout(() => {
-                                this.display = false;
-                                resultMessage.display = false;
-                                sikeMessage.display = false; // Ensure sike message is gone
-
-                                if (imageElement){
-                                    imageElement.style.display = 'block'; // Make the image visible
-                                    // CSS transform handles centering, no need to set left/top here
-                                }
-                                    // Play naniSound directly here, in sync with image appearance
-                                if (naniAudio) {
-                                    naniAudio.currentTime = 0; // Rewind to start
-                                    naniAudio.play().catch(e => console.error("Error playing nani sound:", e));
-                                }
-
-                                drawScene(); // Redraw to clear hacking lines and show image
-                            }, 1500); // This delay is for the image and sound to appear after "Cooked" line
-                            break;
-                        default:
-                            this.addLine("...");
-                    }
-                    drawScene();
-                }, 1100); // Speed of each hacking line
-            },
-            stop: function () {
-                clearInterval(this.interval);
-                this.display = false;
-                this.lines = [];
-
-                if (imageElement) {
-                    imageElement.style.display = 'none'; // Hide image if stop is called
-                }
-                // Stop and rewind all sounds
-                if (sikeAudio) {
-                    sikeAudio.pause();
-                    sikeAudio.currentTime = 0;
-                }
-                if (naniAudio) {
-                    naniAudio.pause();
-                    naniAudio.currentTime = 0;
-                }
-            }
-        };
-
-        let sikeMessage = {
-            text: "Jk",
-            display: false,
-            draw: function (){
-                if (this.display){
-                    drawText(this.text, canvas.width / 2, canvas.height / 2, '100px sans-serif', '#FFFFFF');
-                }
-            }
-        };
-
-        function drawScene() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawRoundedRectangle(50, 20, canvas.width - 100, 80, 8, '#222');
-            ctx.shadowBlur = 15;
-            ctx.shadowOffsetX = 5;
-            ctx.shadowOffsetY = 5;
-            drawText("Unlock Free Unlimited Hard Drive Space!", canvas.width / 2, 60, '26px sans-serif', '#fff');
-            ctx.shadowBlur = 0;
-            button.draw();
-            loadingMessage.draw();
-            progressBar.draw();
-            resultMessage.draw();
-            hackingSequence.draw();
-            sikeMessage.draw();
-        }
-
-        let generationInterval;
-        function startGeneration() {
-            button.display = false;
-            loadingMessage.display = true;
-            progressBar.display = true;
-            progressBar.progress = 0;
-
-            let width = 0;
-            generationInterval = setInterval(() => {
-                if (width >= progressBar.width) { // Check against actual progressBar.width
-                    clearInterval(generationInterval);
-                    loadingMessage.display = false;
-                    progressBar.display = false;
-                    resultMessage.text = "Congratulations! You now have unlimited hard drive space!";
-                    resultMessage.display = true;
-                    setTimeout(() => {
-                        resultMessage.display = false;
-                        sikeMessage.display = true;
-                        // Play sike sound here, after "Congratulations" disappears
-                        if (sikeAudio) {
-                            sikeAudio.currentTime = 0; // Rewind for next play
-                            sikeAudio.play().catch(e => console.error("Error playing sike sound:", e));
-                        }
-                        drawScene()
-                        setTimeout(() => {
-                            sikeMessage.display = false
-                            hackingSequence.start();
-                        }, 1000) // Delay for "Sike" message duration
-                    }, 3000); // Delay for "Congratulations" message duration
-
+        function typeLineInPrompt(textToType, paragraphElement, onCompleteCallback, isAppending = false) {
+            let charIndex = 0;
+            const typingSpeed = 60 + Math.random() * 90; 
+            if (!isAppending) paragraphElement.innerHTML = ''; 
+            function typeChar() {
+                if (charIndex < textToType.length) {
+                    paragraphElement.textContent += textToType.charAt(charIndex);
+                    charIndex++;
+                    commandPromptContent.scrollTop = commandPromptContent.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
                 } else {
-                    width += 3; // Increase by a bit more to make it faster
-                    progressBar.progress = width;
+                    if (onCompleteCallback) onCompleteCallback();
                 }
-                drawScene();
-            }, 40); // Speed of loading bar animation
+            }
+            typeChar();
+        }
+        
+        async function showHackingSequence() {
+            progressBarContainer.classList.add('hidden');
+            messageArea.classList.add('hidden');
+            
+            floatingCommandPrompt.classList.remove('hidden');
+            floatingCommandPrompt.classList.add('flex', 'flex-col'); // Use Tailwind classes to show and set layout
+
+            floatingCommandPrompt.style.left = '50%'; // Re-center logic
+            floatingCommandPrompt.style.top = '50%';
+            floatingCommandPrompt.style.transform = 'translate(-50%, -50%)';
+
+            commandPromptContent.innerHTML = ''; 
+            const desiredSpace = parseInt(spaceAmountInput.value) || 500;
+            fakeHackingLines[6] = "PROMPT C:\\Windows\\system32> execute space_compiler.exe -force -gb " + desiredSpace;
+
+            for (const fullLine of fakeHackingLines) {
+                const p = document.createElement('p');
+                p.className = 'font-roboto-mono'; 
+                commandPromptContent.appendChild(p);
+                let lineText = fullLine;
+                let typeThisLine = false; 
+                let delayAfterLine = 350 + Math.random() * 500; 
+                let currentLineIsPromptAndCommand = false;
+
+                if (fullLine.startsWith("PROMPT ")) {
+                    const parts = fullLine.substring("PROMPT ".length).split(">");
+                    const promptText = parts[0] + ">";
+                    lineText = parts[1] || "";
+                    const promptSpan = document.createElement('span');
+                    promptSpan.className = 'text-gray-200'; 
+                    promptSpan.textContent = promptText;
+                    p.appendChild(promptSpan);
+                    p.className += ' text-green-400'; 
+                    typeThisLine = true; 
+                    currentLineIsPromptAndCommand = true;
+                    delayAfterLine = 600 + Math.random() * 600; 
+                } else if (fullLine.startsWith("SYSTEM ")) {
+                    lineText = fullLine.substring("SYSTEM ".length);
+                    p.className += ' text-gray-300';
+                    delayAfterLine = Math.random() < 0.3 ? (700 + Math.random() * 500) : (250 + Math.random() * 250); 
+                } else if (fullLine.startsWith("ERROR ")) {
+                    lineText = fullLine.substring("ERROR ".length);
+                    p.className += ' text-red-400 font-bold';
+                } else if (fullLine.startsWith("SUCCESS ")) {
+                    lineText = fullLine.substring("SUCCESS ".length);
+                    p.className += ' text-emerald-400 font-bold';
+                } else if (fullLine.startsWith("WARNING ")) {
+                    lineText = fullLine.substring("WARNING ".length);
+                    p.className += ' text-yellow-400';
+                } else if (fullLine === "EMPTY") {
+                    lineText = ""; p.className += ' h-3'; delayAfterLine = 70; 
+                } else { 
+                    p.className += ' text-green-400'; typeThisLine = true;
+                }
+
+                if (typeThisLine) {
+                    // FIXED: Changed textToType to lineText
+                    await new Promise(resolve => typeLineInPrompt(lineText, p, resolve, currentLineIsPromptAndCommand));
+                } else {
+                    p.textContent = lineText;
+                }
+                commandPromptContent.scrollTop = commandPromptContent.scrollHeight;
+                await new Promise(resolve => setTimeout(resolve, delayAfterLine));
+            }
         }
 
-        canvas.addEventListener('mousemove', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-            button.checkHover(mouseX, mouseY);
-            drawScene();
-        });
-
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-            button.click(mouseX, mouseY);
-        });
-
-        // Ensure elements are hidden on load and draw initial scene
-        document.addEventListener('DOMContentLoaded', () => {
-            if (imageElement) {
-                imageElement.style.display = 'none';
-            }
-            // Hide and rewind sounds initially to ensure they are ready
-            if (sikeAudio) {
-                sikeAudio.pause();
-                sikeAudio.currentTime = 0;
-            }
-            if (naniAudio) {
-                naniAudio.pause();
-                naniAudio.currentTime = 0;
+        function startGeneration() {
+            const amount = parseInt(spaceAmountInput.value);
+            if (isNaN(amount) || amount <= 0) {
+                messageArea.classList.remove('hidden');
+                addInitialMessage("Error: Please enter a valid amount of space.", 'error');
+                setTimeout(() => {
+                    if (!progressBarContainer.classList.contains('hidden') && floatingCommandPrompt.classList.contains('hidden')) { 
+                         messageArea.classList.add('hidden');
+                         messageArea.innerHTML = '';
+                    }
+                }, 2500);
+                return;
             }
 
-            drawScene(); // Initial draw of the scene (showing the button)
+            generateButton.disabled = true;
+            generateButton.textContent = "Synthesizing...";
+            generateButton.classList.add('opacity-50', 'cursor-not-allowed');
+            spaceAmountInput.disabled = true;
+            progressBarContainer.classList.remove('hidden');
+            messageArea.classList.remove('hidden');
+            
+            floatingCommandPrompt.classList.add('hidden'); 
+            floatingCommandPrompt.classList.remove('flex', 'flex-col'); 
+
+            messageArea.innerHTML = '';
+            progressBar.style.width = '0%';
+            let progress = 0;
+            let messageIndex = 0;
+            addInitialMessage(`Initializing synthesis for ${amount} GB...`);
+
+            messageInterval = setInterval(() => {
+                if (messageIndex < fakeInitialMessages.length) {
+                    addInitialMessage(fakeInitialMessages[messageIndex]);
+                    messageIndex++;
+                }
+                // UPDATED PROGRESS INCREMENT:
+                progress += 8 + Math.random() * 4; // Ensures progress is ~10% per message
+                                                    // Range: 8-12%, Average: 10%
+                
+                if (progress >= 100) {
+                    progress = 100; // Cap at 100%
+                }
+                
+                if (messageIndex >= fakeInitialMessages.length) {
+                    progress = 100; 
+                    clearInterval(messageInterval);
+                    progressBar.style.width = '100%';
+                    addInitialMessage("Initial phase complete! Engaging advanced protocols...", 'success');
+                    setTimeout(() => {
+                        showHackingSequence(); 
+                    }, 2500); 
+                } else {
+                     progressBar.style.width = progress + '%';
+                }
+
+            }, 1200); 
+        }
+
+        function initialUISetup() {
+            generateButton.disabled = false;
+            generateButton.textContent = "Synthesize Space!";
+            generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            spaceAmountInput.disabled = false;
+            spaceAmountInput.value = "100";
+            progressBarContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            messageArea.classList.add('hidden');
+            messageArea.innerHTML = '';
+            
+            floatingCommandPrompt.classList.add('hidden');
+            floatingCommandPrompt.classList.remove('flex', 'flex-col'); 
+
+            commandPromptContent.innerHTML = '';
+            if (messageInterval) {
+                clearInterval(messageInterval);
+            }
+        }
+
+        let isDragging = false;
+        let offsetX, offsetY;
+        commandPromptTitleBar.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.window-controls')) return;
+            isDragging = true;
+            offsetX = e.clientX - floatingCommandPrompt.offsetLeft;
+            offsetY = e.clientY - floatingCommandPrompt.offsetTop;
+            floatingCommandPrompt.style.transform = ''; 
+            document.body.style.userSelect = 'none'; 
         });
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            let newX = e.clientX - offsetX;
+            let newY = e.clientY - offsetY;
+            const maxX = window.innerWidth - floatingCommandPrompt.offsetWidth;
+            const maxY = window.innerHeight - floatingCommandPrompt.offsetHeight;
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
+            floatingCommandPrompt.style.left = `${newX}px`;
+            floatingCommandPrompt.style.top = `${newY}px`;
+        });
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                document.body.style.userSelect = ''; 
+            }
+        });
+        
+        const fakeCloseButton = commandPromptTitleBar.querySelector('.close');
+        if (fakeCloseButton) {
+            fakeCloseButton.addEventListener('click', () => {
+                floatingCommandPrompt.classList.add('hidden');
+                floatingCommandPrompt.classList.remove('flex', 'flex-col');
+                initialUISetup(); 
+            });
+        }
+
+        generateButton.addEventListener('click', startGeneration);
+        initialUISetup();
     </script>
+
 </body>
 </html>
