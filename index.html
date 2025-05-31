@@ -54,8 +54,6 @@
             border-top: none;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            /* display: flex;  <-- REMOVED */
-            /* flex-direction: column; <-- REMOVED */
             border-radius: 0 0 6px 6px;
         }
 
@@ -77,7 +75,7 @@
         }
 
         #commandPromptContent {
-            flex-grow: 1; /* This works when parent is display:flex */
+            flex-grow: 1; 
             padding: 8px;
             overflow-y: auto;
             color: #E5E7EB;
@@ -112,7 +110,7 @@
 
     <div class="bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
         <header class="text-center mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-emerald-400 glowing-text">HDD Space Synthesizer v3000</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-emerald-400 glowing-text">HDD Space Generator v3000</h1>
             <p class="text-sm text-gray-500 mt-1">Generate Terabytes of Free Space Instantly!*</p>
         </header>
 
@@ -125,7 +123,7 @@
 
         <button id="generateButton"
                 class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 button-active-glow focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75">
-            Synthesize Space!
+            Generate Space!
         </button>
 
         <div id="progressBarContainer" class="mt-6 hidden">
@@ -150,10 +148,6 @@
             </div>
     </div>
 
-    <footer class="mt-8 text-center">
-        <p class="text-xs text-gray-600">*This is a prank website and does not actually generate hard drive space or modify your system in any way. For entertainment purposes only.</p>
-    </footer>
-
     <script>
         // Get DOM elements
         const spaceAmountInput = document.getElementById('spaceAmount');
@@ -171,9 +165,37 @@
         const fakeInitialMessages = [
             "Initializing quantum entanglement drive...", "Connecting to subspace storage matrix...", "Bypassing firewall with heuristic algorithms...", "Calibrating flux capacitor...", "Defragmenting non-existent sectors...", "Reversing polarity of neutron flow...", "Injecting free gigabytes via tachyon beam...", "Optimizing data streams with AI-powered hamsters...", "Buffering a lot of important-looking data...", "Finalizing initial phase..."
         ];
+        
+        // UPDATED HACKING LINES
         const fakeHackingLines = [
-            "SYSTEM Microsoft Windows [Version 10.0.19042.985]", "SYSTEM (c) Microsoft Corporation. All rights reserved.", "EMPTY", "PROMPT C:\\Users\\GamerPC> Attempting advanced system integration...", "SYSTEM Accessing kernel-level functions...", "SYSTEM Bypassing User Account Control... [SUCCESS]", "PROMPT C:\\Windows\\system32> execute space_compiler.exe -force -gb " + (Math.floor(Math.random()*500)+500), "SYSTEM Compiling virtual disk sectors...", "SYSTEM [▓▓▓░░░░░░░░░░░░░░░░░░░░░░░] 15% - Allocating memory blocks...", "SYSTEM [▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░] 30% - Writing pseudo-random data patterns...", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░] 55% - Encrypting virtual partition table...", "WARNING High-frequency tachyon emission detected!", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░] 75% - Verifying data integrity (simulated)...", "ERROR Anomaly detected in sector 0xDEADBEEF! Attempting to recover...", "SYSTEM Recovery failed. Skipping corrupted sector.", "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% - Virtual disk compilation complete.", "SUCCESS New drive mounted as (F:) - Free Space Synthesized!", "PROMPT C:\\Windows\\system32> exit", "SYSTEM Logging off...", "EMPTY"
+            "SYSTEM Initializing connection to target: 192.168.1.101...",
+            "SYSTEM Establishing encrypted tunnel... [AES-256 GCM]",
+            "PROMPT root@kali:~# nmap -sS -Pn 192.168.1.101 -p 22,80,443",
+            "SYSTEM Port scan results: Port 22 (SSH) OPEN, Port 80 (HTTP) OPEN, Port 443 (HTTPS) OPEN",
+            "PROMPT root@kali:~# hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://192.168.1.101",
+            "SYSTEM Brute-force attack initiated on SSH service...",
+            "SYSTEM [ATTEMPT 1/58201] Trying password: password123...",
+            "SYSTEM [ATTEMPT 2754/58201] Trying password: monkey...",
+            "SUCCESS Password found: 'S3cur3P@ssw0rd!' - Access Granted.",
+            "PROMPT admin@target-server:/# whoami",
+            "SYSTEM root",
+            "PROMPT admin@target-server:/# cat /etc/shadow",
+            "SYSTEM Accessing sensitive file system... [PERMISSION DENIED]",
+            "WARNING Intrusion Detection System (IDS) alert triggered!",
+            "PROMPT admin@target-server:/# exploit/kernel_overflow -payload reverse_shell LHOST=10.0.0.5 LPORT=4444",
+            "SYSTEM Kernel exploit initiated... Elevating privileges...",
+            "SUCCESS Root shell established! UID=0 GID=0",
+            "PROMPT root@target-server:/# cd /var/www/html/data_storage",
+            "PROMPT root@target-server:/var/www/html/data_storage# inject_payload --expand-storage " + (Math.floor(Math.random()*800)+200) + "TB",
+            "SYSTEM Injecting custom payload to expand virtual storage capacity...",
+            "SYSTEM [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% - Payload executed successfully.",
+            "PROMPT root@target-server:/var/www/html/data_storage# rm -rf /var/log/* && history -c",
+            "SYSTEM Covering tracks... Deleting logs and command history...",
+            "SUCCESS All traces removed. Mission accomplished.",
+            "PROMPT root@target-server:/# exit",
+            "SYSTEM Disconnecting from target server..."
         ];
+
 
         function addInitialMessage(text, type = 'info') {
             const p = document.createElement('p');
@@ -207,15 +229,22 @@
             messageArea.classList.add('hidden');
             
             floatingCommandPrompt.classList.remove('hidden');
-            floatingCommandPrompt.classList.add('flex', 'flex-col'); // Use Tailwind classes to show and set layout
+            floatingCommandPrompt.classList.add('flex', 'flex-col'); 
 
-            floatingCommandPrompt.style.left = '50%'; // Re-center logic
+            floatingCommandPrompt.style.left = '50%'; 
             floatingCommandPrompt.style.top = '50%';
             floatingCommandPrompt.style.transform = 'translate(-50%, -50%)';
 
             commandPromptContent.innerHTML = ''; 
             const desiredSpace = parseInt(spaceAmountInput.value) || 500;
-            fakeHackingLines[6] = "PROMPT C:\\Windows\\system32> execute space_compiler.exe -force -gb " + desiredSpace;
+            // Update the dynamic part in the new fakeHackingLines array
+            // Find the line that needs the dynamic space and update it.
+            // Assuming it's the line with "inject_payload --expand-storage"
+            const injectionLineIndex = fakeHackingLines.findIndex(line => line.includes("inject_payload --expand-storage"));
+            if (injectionLineIndex !== -1) {
+                fakeHackingLines[injectionLineIndex] = `PROMPT root@target-server:/var/www/html/data_storage# inject_payload --expand-storage ${desiredSpace}TB`;
+            }
+
 
             for (const fullLine of fakeHackingLines) {
                 const p = document.createElement('p');
@@ -227,38 +256,42 @@
                 let currentLineIsPromptAndCommand = false;
 
                 if (fullLine.startsWith("PROMPT ")) {
-                    const parts = fullLine.substring("PROMPT ".length).split(">");
-                    const promptText = parts[0] + ">";
+                    const parts = fullLine.substring("PROMPT ".length).split("#"); // Changed delimiter to # for root prompt
+                    const promptText = parts[0] + "#";
                     lineText = parts[1] || "";
                     const promptSpan = document.createElement('span');
-                    promptSpan.className = 'text-gray-200'; 
+                    promptSpan.className = 'text-red-400'; // Typical root prompt color
+                    if (parts[0].includes("admin@")) { // Different color for non-root user prompt
+                         promptSpan.className = 'text-blue-400';
+                    }
                     promptSpan.textContent = promptText;
                     p.appendChild(promptSpan);
-                    p.className += ' text-green-400'; 
+                    p.className += ' text-gray-200'; // Command text color
                     typeThisLine = true; 
                     currentLineIsPromptAndCommand = true;
                     delayAfterLine = 600 + Math.random() * 600; 
                 } else if (fullLine.startsWith("SYSTEM ")) {
                     lineText = fullLine.substring("SYSTEM ".length);
-                    p.className += ' text-gray-300';
+                    p.className += ' text-yellow-300'; // System messages in yellow
                     delayAfterLine = Math.random() < 0.3 ? (700 + Math.random() * 500) : (250 + Math.random() * 250); 
                 } else if (fullLine.startsWith("ERROR ")) {
                     lineText = fullLine.substring("ERROR ".length);
-                    p.className += ' text-red-400 font-bold';
+                    p.className += ' text-red-500 font-bold'; // Brighter red for errors
                 } else if (fullLine.startsWith("SUCCESS ")) {
                     lineText = fullLine.substring("SUCCESS ".length);
-                    p.className += ' text-emerald-400 font-bold';
+                    p.className += ' text-green-400 font-bold'; // Brighter green for success
                 } else if (fullLine.startsWith("WARNING ")) {
                     lineText = fullLine.substring("WARNING ".length);
-                    p.className += ' text-yellow-400';
+                    p.className += ' text-orange-400 font-bold'; // Orange for warnings
                 } else if (fullLine === "EMPTY") {
                     lineText = ""; p.className += ' h-3'; delayAfterLine = 70; 
                 } else { 
-                    p.className += ' text-green-400'; typeThisLine = true;
+                    // Fallback for any lines not prefixed, though all should be.
+                    p.className += ' text-gray-200'; 
+                    typeThisLine = false; // Default to not typing if not a PROMPT
                 }
 
                 if (typeThisLine) {
-                    // FIXED: Changed textToType to lineText
                     await new Promise(resolve => typeLineInPrompt(lineText, p, resolve, currentLineIsPromptAndCommand));
                 } else {
                     p.textContent = lineText;
@@ -283,7 +316,7 @@
             }
 
             generateButton.disabled = true;
-            generateButton.textContent = "Synthesizing...";
+            generateButton.textContent = "Generating...";
             generateButton.classList.add('opacity-50', 'cursor-not-allowed');
             spaceAmountInput.disabled = true;
             progressBarContainer.classList.remove('hidden');
@@ -296,19 +329,17 @@
             progressBar.style.width = '0%';
             let progress = 0;
             let messageIndex = 0;
-            addInitialMessage(`Initializing synthesis for ${amount} GB...`);
+            addInitialMessage(`Initializing generation for ${amount} GB...`);
 
             messageInterval = setInterval(() => {
                 if (messageIndex < fakeInitialMessages.length) {
                     addInitialMessage(fakeInitialMessages[messageIndex]);
                     messageIndex++;
                 }
-                // UPDATED PROGRESS INCREMENT:
-                progress += 8 + Math.random() * 4; // Ensures progress is ~10% per message
-                                                    // Range: 8-12%, Average: 10%
+                progress += 8 + Math.random() * 4; 
                 
                 if (progress >= 100) {
-                    progress = 100; // Cap at 100%
+                    progress = 100; 
                 }
                 
                 if (messageIndex >= fakeInitialMessages.length) {
@@ -318,17 +349,16 @@
                     addInitialMessage("Initial phase complete! Engaging advanced protocols...", 'success');
                     setTimeout(() => {
                         showHackingSequence(); 
-                    }, 2500); 
+                    }, 3000); 
                 } else {
                      progressBar.style.width = progress + '%';
                 }
-
-            }, 1200); 
+            }, 1500); 
         }
 
         function initialUISetup() {
             generateButton.disabled = false;
-            generateButton.textContent = "Synthesize Space!";
+            generateButton.textContent = "Generate Space!";
             generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
             spaceAmountInput.disabled = false;
             spaceAmountInput.value = "100";
